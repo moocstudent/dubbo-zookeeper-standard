@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>待办事项</title>
+    <link rel="stylesheet" type="text/css" href="https://www.jeasyui.com/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="https://www.jeasyui.com/easyui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="https://www.jeasyui.com/easyui/themes/color.css">
+    <link rel="stylesheet" type="text/css" href="https://www.jeasyui.com/easyui/demo/demo.css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+    <script type="text/javascript" src="https://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
+</head>
+<body>
+<h2>待办事项</h2>
+<p>Click the buttons on datagrid toolbar to do crud actions.</p>
+
+<table id="dg" title="My Users" class="easyui-datagrid" style="width:100%;height:100%"
+       url="http://localhost:7777/user/listUserBlurName" ,
+       toolbar="#toolbar" pagination="true" rowTooltip="false"
+       rownumbers="true" fitColumns="true" singleSelect="true">
+    <thead>
+    <tr>
+        <th field="id" width="50">id</th>
+        <th field="username" width="50">username</th>
+        <th field="password" width="50">password</th>
+    </tr>
+    </thead>
+</table>
+<div id="toolbar">
+    <a href="/" class="easyui-linkbutton" data-options="iconCls:'icon-back'" plain="true"
+    >Back</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add'" plain="true"
+       onclick="newItem()">Add</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" plain="true"
+       onclick="editItem()">Edit</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" plain="true"
+       onclick="destroyItem()">Remove</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-search'" plain="true"
+       onclick="some()">Search</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-reload'" plain="true"
+       onclick="location.reload()">Reload</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-save'" plain="true"
+       onclick="saveItem()">Save</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-cut'" plain="true"
+       onclick="cut()">Cut</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-cut',disabled:true" plain="true"
+       onclick="cut()">Disabled Cut</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" plain="true"
+       onclick="cancel()">Cancel</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-print'" plain="true"
+       onclick="print()">Print</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-help'" plain="true"
+       onclick="help()">Help</a>
+    <br>
+    <a href="javascript:void(0)" class="easyui-linkbutton"
+       data-options="iconCls:'icon-large-picture',size:'large',iconAlign:'top'">Picture</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton"
+       data-options="iconCls:'icon-large-clipart',size:'large',iconAlign:'top'">Clip Art</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton"
+       data-options="iconCls:'icon-large-shapes',size:'large',iconAlign:'top'">Shapes</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton"
+       data-options="iconCls:'icon-large-smartart',size:'large',iconAlign:'top'">SmartArt</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton"
+       data-options="iconCls:'icon-large-chart',size:'large',iconAlign:'top'">Chart</a>
+</div>
+</div>
+
+<div id="dlg" class="easyui-dialog" style="width:400px"
+     data-options="closed:true,modal:true,border:'thin',buttons:'#dlg-buttons'">
+    <form id="fm" method="post" novalidate style="margin:0;padding:20px 50px">
+        <h3>user Information</h3>
+        <!--隐藏的id ,必须-->
+        <div style="margin-bottom:10px" hidden="hidden" id="idDiv">
+            id
+            <input id="id" disabled="disabled" name="id" class="easyui-textbox" required="true" style="width:100%"
+                   hidden="hidden">
+        </div>
+        <div style="margin-bottom:10px">
+            username
+            <input id="username" name="username" class="easyui-textbox" required="true" style="width:100%">
+        </div>
+        <div style="margin-bottom:10px">
+            password
+            <input id="password" name="password" class="easyui-textbox" required="true" style="width:100%">
+        </div>
+    </form>
+</div>
+
+<div id="dlg-buttons">
+    <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="saveItem()" style="width:90px">Save</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel"
+       onclick="javascript:$('#dlg').dialog('close')" style="width:90px">Cancel</a>
+</div>
+<script type="text/javascript">
+    var url;
+
+    //新增
+    function newItem() {
+        $('#username').textbox('textbox').attr('readonly',false);
+        $('#dlg').dialog('open').dialog('center').dialog('setTitle', 'New User');
+        $('#fm').form('clear');
+        url = "http://localhost:7777/user/addUser";
+    }
+
+    //编辑
+    function editItem() {
+        $('#username').textbox('textbox').attr('readonly',true);
+
+        var row = $('#dg').datagrid('getSelected');
+        if (row) {
+            $('#dlg').dialog('open').dialog('center').dialog('setTitle', 'Edit User');
+            $('#fm').form('load', row);
+            url = "http://localhost:7777/user/updateUserByPK?id=" + row.id;
+        }
+    }
+
+    //保存
+    function saveItem() {
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            data: $('#fm').serialize(),
+            type: 'post',
+            success: function (result) {
+                if (result.code > 0) {
+                    $.messager.show({
+                        title: 'complete',
+                        msg: result.msg
+                    })
+                    $('#dlg').dialog('close');		// close the dialog
+                    $('#dg').datagrid('reload');	// reload the user data
+                } else {
+                    $.messager.show({
+                        title: 'error',
+                        msg: result.msg
+                    });
+                }
+            }
+        })
+    }
+
+        //可批量删除
+        function destroyItem() {
+            var url = "http://localhost:7777/user/delUserByPK";
+            // var rows = $('#dg').datagrid('getSelections');
+            var row = $('#dg').datagrid('getSelected');
+            if (row) {
+                $.messager.confirm('Confirm', '确定删除数据?', function (r) {
+                    if (r) {
+                        // var ids = [];
+                        // for (var i = 0; i < rows.length; i++) {
+                        //     ids.push(rows[i].id);
+                        // }
+                        // console.log("ids[0]:"+ids[0]);
+                        $.ajax({
+                            url: url,
+                            dataType: 'json',
+                            data: {'id': row.id},
+                            type: 'post',
+                            success: function (result) {
+                                if (result.code > 0) {
+                                    $.messager.show({
+                                        title: 'complete',
+                                        msg: result.msg
+                                    })
+                                    $('#dlg').dialog('close');		// close the dialog
+                                    $('#dg').datagrid('reload');	// reload the user data
+                                } else {
+                                    $.messager.show({
+                                        title: 'error',
+                                        msg: result.msg
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        }
+</script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zlf.open.user.dao.mysql.UserMapper">
+
+    <resultMap id="BaseResultMap" type="com.zlf.open.api.domain.User">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="username" jdbcType="VARCHAR" property="username"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,username,password
+    </sql>
+
+    <select id="selectUserByUsernamePassword" resultType="com.zlf.open.api.domain.User">
+        select
+        <include refid="Base_Column_List"/>
+        from `user`
+        where username = #{param1} and password = #{param2}
+    </select>
+
+    <!--获取用户通过id-->
+    <select id="getUserById" resultType="com.zlf.open.api.domain.User">
+        select id,username from `user`
+        where id = #{param1}
+    </select>
+
+    <!--获取用户通过username相同(唯一)-->
+    <select id="selectUserByUsername" resultType="com.zlf.open.api.domain.User">
+        select id,username from `user`
+         <where>
+             <if test="username != null and username != '' ">
+                 username=#{param1}
+             </if>
+         </where>
+    </select>
+
+    <select id="selectUserByBlurUsername" resultMap="BaseResultMap">
+        select id,username,password from `user`
+        <where>
+            <if test="username != null and username != '' ">
+                username like CONCAT ('%',#{param1},'%')
+            </if>
+        </where>
+        order by id desc
+    </select>
+
+    <insert id="insertUser" keyColumn="id" keyProperty="id" useGeneratedKeys="false">
+        insert into `user`(username,password)
+        values(#{param1},#{param2})
+    </insert>
+
+    <update id="updateUserPasswordById">
+        update `user`
+        set password = #{param2}
+        where id = #{param1}
+    </update>
+
+    <!--批量删除-->
+    <delete id="deleteUserBatchByPKArr" parameterType="java.lang.String">
+        delete from `user`
+        where id in
+        <foreach item="ids" index="index" collection="array" open="(" separator="," close=")">
+            #{ids}
+        </foreach>
+    </delete>
+
+    <delete id="deleteUserById">
+        delete from `user`
+        where id = #{param1}
+    </delete>
+
+</mapper>
