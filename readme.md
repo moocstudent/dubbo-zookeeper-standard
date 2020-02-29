@@ -1,22 +1,7 @@
-user-service-core UserController 路径写好
-<br>
-user-service-user UserBll 类似dao层写好
-<br>
-UserMapper 接口写好
-<br>
-mapper中UserMapper.xml写好
-<br>
-加入了index.html 实现获取用户,新增更改删除操作
+怎么使用
+1.修改user-service-core和-user中的数据库连接用户账户密码
+2.启动provider(user-service-user),启动consumer(user-service-core),启动web查看效果
 
-搭建了dubbo-admin 和 zookeeper在linux上http://60.205.224.226/ root root
-
-##### 2019-12-13
-1.dubbo-zookeeper的该项目如何部署?
-2.文件上传 存放位置
-3.集群形式的更改
-
-服务动态上下线?
-zookeeper的软负载均衡?
 
 
 节点类型(Persistent) : 客户端和服务器端断开连接后,创建的节点不删除
