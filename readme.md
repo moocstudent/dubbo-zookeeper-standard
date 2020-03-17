@@ -1,7 +1,7 @@
 怎么使用
 1.修改user-service-core和-user中的数据库连接用户账户密码
 2.启动provider(user-service-user),启动consumer(user-service-core),启动web查看效果
-
+  
 
 
 节点类型(Persistent) : 客户端和服务器端断开连接后,创建的节点不删除
